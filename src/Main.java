@@ -8,17 +8,22 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         Loader loader = new Loader();
-        CVRPModel model = loader.loadFileData("V_Difficult - Leuven1-3000N, 25Q");
+        CVRPModel model = loader.loadFileData("Medium - X-n200-k36");
+        submitLoader(model);
+    }
+
+    private static void submitLoader(CVRPModel model) {
         System.out.println("COORD DATA");
-        for (int[] data: model.getCoords()) {
+        for (Integer[] data: model.getCoords()) {
             System.out.printf("%d %d %d", data[0], data[1], data[2]);
             System.out.println(" ");
         }
         System.out.println(" ");
         System.out.println("DEMAND DATA");
-        for (int[] data: model.getDemands()) {
+        for (Integer[] data: model.getDemands()) {
             System.out.printf("%d %d", data[0], data[1]);
             System.out.println(" ");
         }
+        System.out.println("CAPACITY " + model.getCapacity());
     }
 }

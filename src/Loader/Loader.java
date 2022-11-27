@@ -18,7 +18,7 @@ public class Loader {
         File fileToRead = new File(filePath + ".vrp");
         CVRPModel model = new CVRPModel();
 
-        Hashtable<String, int[][]> section_dict = new Hashtable<>();
+        Hashtable<String, Integer[][]> section_dict = new Hashtable<>();
 
         Scanner fileScanner = new Scanner(fileToRead);
         while(fileScanner.hasNextLine()){
@@ -43,7 +43,7 @@ public class Loader {
                     if(nextLine.equals(secondSection)) currentSection = secondSection;
                     if(!nextLine.isBlank() && !nextLine.equals(secondSection)){
                         String[] formattedLine = nextLine.trim().split("\\s+");
-                        int[] readyLine = new int[formattedLine.length];
+                        Integer[] readyLine = new Integer[formattedLine.length];
                         for(int i = 0; i < formattedLine.length; i++){
                             readyLine[i] = Integer.parseInt(formattedLine[i]);
                         }
