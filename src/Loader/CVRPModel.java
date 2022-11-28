@@ -12,6 +12,7 @@ public class CVRPModel {
     private int datasetSize;
     private int capacity;
     private double[][] adjacencyMatrix;
+    private double score;
 
     public CVRPModel(int datasetSize) {
         this.datasetSize = datasetSize;
@@ -36,6 +37,28 @@ public class CVRPModel {
                 adjacencyMatrix[i][j] = evaluateDistance(this.coords[i], this.coords[j]);
             }
         }
-        this.adjacencyMatrix = adjacencyMatrix;
+        this.setAdjacencyMatrix(adjacencyMatrix);
+    }
+
+    public void evaluateScore(){
+        int currentLoad = 0; //first location is depot and after whole course truck returns to depot
+        double score = 0.0; //distance to be counted
+
+        for (int i = 0; i < this.datasetSize; i++) {
+            if(i + 1 < this.datasetSize){
+                int newLoad = this.demands[i+1][1];
+                if(currentLoad + newLoad > this.capacity){
+                    score += adjacencyMatrix[i][0] + adjacencyMatrix[i+1][0];
+                    currentLoad = newLoad;
+                }else {
+                    score += adjacencyMatrix[i][i+1];
+                    currentLoad += newLoad;
+                }
+            }else {
+                //last location -> return to depot
+                score += adjacencyMatrix[i][0];
+            }
+        }
+        this.score = score;
     }
 }

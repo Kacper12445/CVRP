@@ -8,7 +8,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         Loader loader = new Loader();
-        CVRPModel model = loader.loadFileData("Medium - X-n200-k36");
+        CVRPModel model = loader.loadFileData("Easy - P-n20-k2");
+        model.evaluateScore();
         submitLoader(model);
     }
 
