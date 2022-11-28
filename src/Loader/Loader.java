@@ -48,11 +48,12 @@ public class Loader {
                             readyLine[i] = Integer.parseInt(formattedLine[i]);
                         }
                         section_dict.get(currentSection)[readyLine[0] - 1] = readyLine;
-                    };
+                    }
                 }
             }
         }
         fileScanner.close();
+        model.createAdjacencyMatrix();
         return model;
     }
 }
