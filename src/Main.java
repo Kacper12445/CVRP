@@ -1,16 +1,19 @@
+import Algorithm.Greedy.GreedyAlgorithm;
 import Loader.Loader;
 
 import java.io.IOException;
+import java.util.*;
+
 import Loader.*;
 
 
 public class Main {
-
     public static void main(String[] args) throws IOException {
         Loader loader = new Loader();
-        CVRPModel model = loader.loadFileData("Easy - P-n20-k2");
-        model.evaluateScore();
-        submitLoader(model);
+        CVRPModel model = loader.loadFileData("Medium - tai100c");
+        GreedyAlgorithm greedy = new GreedyAlgorithm(0, model);
+        greedy.searchForSolution();
+//        submitLoader(model);
     }
 
     private static void submitLoader(CVRPModel model) {
