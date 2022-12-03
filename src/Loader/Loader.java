@@ -39,7 +39,10 @@ public class Loader {
             if(!currentSection.equals(this.endOfFile)){
                 while(fileScanner.hasNextLine()){
                     String nextLine = fileScanner.nextLine().trim();
-                    if(nextLine.equals(this.depotSection)) return model;
+                    if(nextLine.equals(this.depotSection)){
+                        model.createAdjacencyMatrix();
+                        return model;
+                    }
                     if(nextLine.equals(secondSection)) currentSection = secondSection;
                     if(!nextLine.isBlank() && !nextLine.equals(secondSection)){
                         String[] formattedLine = nextLine.trim().split("\\s+");
@@ -53,7 +56,6 @@ public class Loader {
             }
         }
         fileScanner.close();
-        model.createAdjacencyMatrix();
         return model;
     }
 }
