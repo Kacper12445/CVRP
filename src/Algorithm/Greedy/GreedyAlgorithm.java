@@ -12,7 +12,7 @@ public class GreedyAlgorithm {
     private CVRPModel cvrpModel;
 
     public GreedyAlgorithm(int startPoint, CVRPModel cvrpModel) {
-        this.path = new Integer[cvrpModel.getDatasetSize()];
+        this.path = new Integer[cvrpModel.getDatasetSize() + 1];
         this.path[0] = startPoint;
         this.costMatrix = new double[cvrpModel.getDatasetSize()][cvrpModel.getDatasetSize()];
         this.cvrpModel = cvrpModel;
@@ -24,8 +24,8 @@ public class GreedyAlgorithm {
         double minCost = Double.MAX_VALUE;
         int minCostIndex = -1;
         double edgeCost;
-        for (int i = 0; i < this.path.length - 1; i++) {
-            for (int j = 0; j < this.path.length; j++) {
+        for (int i = 0; i < this.path.length - 2; i++) {
+            for (int j = 0; j < this.path.length - 1; j++) {
                 edgeCost = this.costMatrix[this.path[i]][j];
                 if (minCost > edgeCost && edgeCost != 0) {
                     minCost = edgeCost;
@@ -39,6 +39,7 @@ public class GreedyAlgorithm {
             minCost = Double.MAX_VALUE;
             minCostIndex = -1;
         }
+        this.path[this.cvrpModel.getDatasetSize()] = this.path[0];
         this.cost = cvrpModel.evaluateScore(this.path);
     }
 

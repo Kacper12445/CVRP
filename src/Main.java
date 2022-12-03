@@ -11,18 +11,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Loader loader = new Loader();
         CVRPModel model = loader.loadFileData("Medium - tai100c");
-        Random random = new Random();
-        double minValue = Double.MAX_VALUE;
-        int startPoint;
-        for (int i = 0; i < 100; i++) {
-            startPoint = random.nextInt(100);
-            GreedyAlgorithm greedy = new GreedyAlgorithm(startPoint, model);
-            greedy.searchForSolution();
-            System.out.println("Start Point: " + startPoint);
-            System.out.println("Cost: " + greedy.getCost());
-            if (minValue > greedy.getCost()) minValue = greedy.getCost();
-        }
-        System.out.println("Best score: " + minValue);
+        GreedyAlgorithm greedy = new GreedyAlgorithm(0, model);
+        greedy.searchForSolution();
 //        submitLoader(model);
     }
 
