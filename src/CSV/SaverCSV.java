@@ -15,8 +15,8 @@ public class SaverCSV {
     }
 
     public void saveEpochToCSV(int epoch, double[] populationCosts) throws IOException {
-        double best = Arrays.stream(populationCosts).max().getAsDouble();
-        double worst = Arrays.stream(populationCosts).min().getAsDouble();
+        double best = Arrays.stream(populationCosts).min().getAsDouble();
+        double worst = Arrays.stream(populationCosts).max().getAsDouble();
         double avg = Arrays.stream(populationCosts).average().getAsDouble();
         double std = this.calculateStd(populationCosts);
         this.writer.write(epoch + "," + best + "," + worst + "," + avg + "," + std + "\n");
