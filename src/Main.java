@@ -1,8 +1,9 @@
 import Algorithm.Greedy.GreedyAlgorithm;
+import Algorithm.Random.RandomAlgorithm;
+import CSV.SaverCSV;
 import Loader.Loader;
 
 import java.io.IOException;
-import java.util.*;
 
 import Loader.*;
 
@@ -13,6 +14,17 @@ public class Main {
         CVRPModel model = loader.loadFileData("Medium - tai100c");
         GreedyAlgorithm greedy = new GreedyAlgorithm(0, model);
         greedy.searchForSolution();
+        SaverCSV saverCSV = new SaverCSV("randomTest.csv");
+        double[] results = new double[10];
+        for (int j = 0; j < 10; j++) {
+            for (int i = 0; i < 10; i++) {
+                RandomAlgorithm random = new RandomAlgorithm(model);
+                random.searchSolution();
+                results[i] = random.getCost();
+            }
+            saverCSV.saveEpochToCSV(j, results);
+        }
+        saverCSV.closeFile();
 //        submitLoader(model);
     }
 
