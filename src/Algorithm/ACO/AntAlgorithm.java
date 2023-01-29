@@ -12,14 +12,14 @@ public class AntAlgorithm {
     private final double alpha = 1;           // Pheromone importance
     private final double beta = 5;            // Distance priority (should be greater than alpha for best results)
     private final double evaporation = 0.5;   // Percent of how much the pheromone should left on trail
-    private final double Q = 500;              // Total amount of pheromone left on the trail by each Ant
+    private final double Q = 1;              // Total amount of pheromone left on the trail by each Ant
     private final double antPerCity = 2;      // How many ant we will use per city
     private final int maxIterations = 100;
     private final int numberOfCities;
     private final int numberOfAnts;
     private double[][] pheromoneMatrix;
 
-    private final double[][] graph;
+    private final double[][] distanceGraph;
     private final double[] probabilities;
     private List<Ant> colony;
     private final Random random = new Random();
@@ -27,21 +27,22 @@ public class AntAlgorithm {
     private Integer[] bestTourOrder;
     private double bestTourLength;
     private double worstTourLength;
-    private int runACONumber = 10;
+    private int runACONumber;
     private CVRPModel cvrpModel;
     SaverCSV saverCSV = null;
     double[] antsScores;
     public double[] bestScoresArray;
     public double[] worstScoresArray;
 
-    public AntAlgorithm(CVRPModel cvrpModel) throws IOException {
+    public AntAlgorithm(CVRPModel cvrpModel, String fileSaveName, int runAlgorithmAmount) throws IOException {
+        runACONumber = runAlgorithmAmount;
         bestScoresArray = new double[runACONumber];
         worstScoresArray = new double[runACONumber];
         this.cvrpModel = cvrpModel;
 
         colony = new ArrayList<>();
-        graph = cvrpModel.getAdjacencyMatrix();
-        saverCSV = new SaverCSV("test2.csv");
+        distanceGraph = cvrpModel.getAdjacencyMatrix();
+        saverCSV = new SaverCSV(fileSaveName + ".csv");
 
         numberOfCities = cvrpModel.getDatasetSize();
         pheromoneMatrix = new double[numberOfCities][numberOfCities];
@@ -56,13 +57,13 @@ public class AntAlgorithm {
 
     public void runACO() throws IOException {
         for(int i = 0; i < runACONumber; i++){
-            solve();
+            searchForResult(i);
             bestScoresArray[i] = bestTourLength;
             worstScoresArray[i] = worstTourLength;
         }
     }
 
-    public void solve() throws IOException {
+    public void searchForResult(int runAlgorithmNumer) throws IOException {
         setupAnts();
         setInitialPheromoneMatrix();
 
@@ -70,19 +71,27 @@ public class AntAlgorithm {
             moveAnts();
             updatePheromoneMatrixValues();
             updateBestPath();
-            saverCSV.saveEpochToCSV(i, antsScores);
+            if(runAlgorithmNumer == 0){
+                saverCSV.saveEpochToCSV(i, antsScores);
+            }
             Arrays.fill(antsScores, 0.0);
-//            System.out.println("Best tour length: " + (bestTourLength));
-//            System.out.println("Worst tour length: " + (worstTourLength));
         }
 //        System.out.println("Best tour length: " + (bestTourLength));
 //        System.out.println("Worst tour length: " + (worstTourLength));
     }
 
     public void setupAnts(){
+        List<Integer> selectedCities = new ArrayList<>();
             for (Ant ant : colony) {
                 ant.resetVisitedCities();
-                ant.visitCity(0, random.nextInt(numberOfCities));
+                int randomCityNumber = random.nextInt(numberOfCities);
+                if (selectedCities.contains(randomCityNumber) && selectedCities.size() < numberOfCities) {
+                    while (selectedCities.contains(randomCityNumber)) {
+                        randomCityNumber = random.nextInt(numberOfCities);
+                    }
+                }
+                ant.visitCity(0, randomCityNumber);
+                selectedCities.add(randomCityNumber);
             }
         currentIndex = 0;
     }
@@ -97,15 +106,13 @@ public class AntAlgorithm {
     private int selectNextCity(Ant ant) {
         calculateProbabilities(ant);
         double r = random.nextDouble();
-        double total = 0;
-
+        double total = 0.00;
         for (int i = 0; i < numberOfCities; i++) {
             total += probabilities[i];
-            if (total >= r) {
+            if (total >= r && !ant.visited[i]) {
                 return i;
             }
         }
-
         throw new RuntimeException("There are no other cities");
     }
 
@@ -114,14 +121,14 @@ public class AntAlgorithm {
         double pheromone = 0.0;
         for (int l = 0; l < numberOfCities; l++) {
             if (!ant.visited(l)) {
-                pheromone += Math.pow(pheromoneMatrix[currentCityNumber][l], alpha) * Math.pow(1.0 / graph[currentCityNumber][l], beta);
+                pheromone += Math.pow(pheromoneMatrix[currentCityNumber][l], alpha) * Math.pow(1.0 / distanceGraph[currentCityNumber][l], beta);
             }
         }
         for (int j = 0; j < numberOfCities; j++) {
             if (ant.visited(j)) {
                 probabilities[j] = 0.0;
             } else {
-                double numerator = Math.pow(pheromoneMatrix[currentCityNumber][j], alpha) * Math.pow(1.0 / graph[currentCityNumber][j], beta);
+                double numerator = Math.pow(pheromoneMatrix[currentCityNumber][j], alpha) * Math.pow(1.0 / distanceGraph[currentCityNumber][j], beta);
                 probabilities[j] = numerator / pheromone;
             }
         }
@@ -145,19 +152,18 @@ public class AntAlgorithm {
         }
     }
 
-    private void updateBestPath() {
+    private void updateBestPath() throws IOException {
         double temp = 0.0;
         if (bestTourOrder == null) {
             bestTourOrder = colony.get(0).trail;
             bestTourLength = cvrpModel.evaluateScore(colony.get(0).trail);
             temp = bestTourLength;
+
         }
         for(int i =0; i < numberOfAnts; i++){
             double tripCost = cvrpModel.evaluateScore(colony.get(i).trail);
-//            System.out.println(cvrpModel.evaluateScore(colony.get(i).trail));
             antsScores[i] = tripCost;
             if (tripCost < temp) {
-                System.out.println("TEMP: : "+ temp);
                 temp = tripCost;
             }
         }
@@ -165,7 +171,6 @@ public class AntAlgorithm {
         for (Ant a : colony) {
             double currentScore = cvrpModel.evaluateScore(a.trail);
             if (currentScore < bestTourLength) {
-                System.out.println(bestTourLength);
                 bestTourLength = currentScore;
                 bestTourOrder = a.trail.clone();
             }

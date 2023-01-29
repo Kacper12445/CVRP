@@ -12,34 +12,34 @@ import Loader.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        Loader loader = new Loader();
-        CVRPModel model = loader.loadFileData("Medium - tai150d");
-        GreedyAlgorithm greedy = new GreedyAlgorithm(0, model);
-        greedy.searchForSolution();
-//        SaverCSV saverCSV = new SaverCSV("randomTest.csv");
-        double[] results = new double[10];
-
-//        for (int j = 0; j < 10; j++) {
-//            for (int i = 0; i < 10; i++) {
-//                RandomAlgorithm random = new RandomAlgorithm(model);
-//                random.searchSolution();
-//                results[i] = random.getCost();
-//            }
-//            saverCSV.saveEpochToCSV(j, results);
-//        }
-        AntAlgorithm antColony = new AntAlgorithm(model);
-        antColony.runACO();
-        double best = Arrays.stream(antColony.bestScoresArray).average().getAsDouble();
-        double worst = Arrays.stream(antColony.worstScoresArray).average().getAsDouble();
-        System.out.println(Arrays.toString(antColony.bestScoresArray));
-        System.out.println(Arrays.toString(antColony.worstScoresArray));
-        System.out.println("BEST AVG: " + best);
-        System.out.println("WORST AVG: " + worst);
+        String[] fileNames = { "Difficult - X-n599-k92", "Difficult - X-n801-k40", "V_Difficult - Leuven1-3000N, 25Q"};
+        for(String fileName : fileNames){
+            Loader loader = new Loader();
+            CVRPModel model = loader.loadFileData(fileName);
+//            GreedyAlgorithm greedy = new GreedyAlgorithm(0, model);
+//            greedy.searchForSolution();
+            int runAlgTimes;
+            if(!fileName.equals("V_Difficult - Leuven1-3000N, 25Q")){
+                runAlgTimes = 10;
+            }else{
+                runAlgTimes = 4;
+            }
+            System.out.println("CURRENT FILE RUN:  " + fileName);
+            AntAlgorithm antColony = new AntAlgorithm(model, fileName +" -- ResultFile", runAlgTimes);
+            antColony.runACO();
+            double best = Arrays.stream(antColony.bestScoresArray).average().getAsDouble();
+            double worst = Arrays.stream(antColony.worstScoresArray).average().getAsDouble();
+            System.out.println(Arrays.toString(antColony.bestScoresArray));
+            System.out.println(Arrays.toString(antColony.worstScoresArray));
+            System.out.println("BEST AVG: " + best);
+            System.out.println("WORST AVG: " + worst);
 
 //        saverCSV.closeFile();
-        System.out.println("GREEDY COST: " + greedy.getCost());
+//            System.out.println("GREEDY COST: " + greedy.getCost());
 
 //        submitLoader(model);
+        }
+
 
 
     }
