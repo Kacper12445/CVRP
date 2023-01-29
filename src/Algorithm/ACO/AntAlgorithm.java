@@ -9,12 +9,12 @@ import java.util.stream.IntStream;
 import java.util.Arrays;
 public class AntAlgorithm {
     private final double c = 1;             // Initial value of trails at the start of the simulation
-    private final double alpha = 1;           // Pheromone importance
-    private final double beta = 5;            // Distance priority (should be greater than alpha for best results)
+    private final double alpha = 1;
+    private final double beta = 10;
     private final double evaporation = 0.5;   // Percent of how much the pheromone should left on trail
-    private final double Q = 1;              // Total amount of pheromone left on the trail by each Ant
-    private final double antPerCity = 2;      // How many ant we will use per city
-    private final int maxIterations = 100;
+    private final double Q = 1;
+    private final double antPerCity = 2;
+    private final int maxIterations = 200;
     private final int numberOfCities;
     private final int numberOfAnts;
     private double[][] pheromoneMatrix;
@@ -63,7 +63,7 @@ public class AntAlgorithm {
         }
     }
 
-    public void searchForResult(int runAlgorithmNumer) throws IOException {
+    public void searchForResult(int runAlgorithmNumber) throws IOException {
         setupAnts();
         setInitialPheromoneMatrix();
 
@@ -71,12 +71,12 @@ public class AntAlgorithm {
             moveAnts();
             updatePheromoneMatrixValues();
             updateBestPath();
-            if(runAlgorithmNumer == 0){
+            if(runAlgorithmNumber < 2){
                 saverCSV.saveEpochToCSV(i, antsScores);
             }
             Arrays.fill(antsScores, 0.0);
         }
-//        System.out.println("Best tour length: " + (bestTourLength));
+//        System.out.println("Best tour order: " + Arrays.toString(bestTourOrder));
 //        System.out.println("Worst tour length: " + (worstTourLength));
     }
 

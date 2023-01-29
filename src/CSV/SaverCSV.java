@@ -19,10 +19,6 @@ public class SaverCSV {
         double worst = Arrays.stream(populationCosts).max().getAsDouble();
         double avg = Arrays.stream(populationCosts).average().getAsDouble();
         double std = this.calculateStd(populationCosts);
-//        System.out.println(best);
-//        System.out.println(worst);
-//        System.out.println(avg);
-//        System.out.println(std);
         this.writer.write(epoch + "," + best + "," + worst + "," + avg + "," + std + "\n");
     }
 

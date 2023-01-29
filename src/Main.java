@@ -12,6 +12,8 @@ import Loader.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+//        String[] fileNames = { "Easy - P-n20-k2", "Easy - P-n50-k7", "Medium - tai100c"};
+
         String[] fileNames = { "Difficult - X-n599-k92", "Difficult - X-n801-k40", "V_Difficult - Leuven1-3000N, 25Q"};
         for(String fileName : fileNames){
             Loader loader = new Loader();
@@ -21,11 +23,12 @@ public class Main {
             int runAlgTimes;
             if(!fileName.equals("V_Difficult - Leuven1-3000N, 25Q")){
                 runAlgTimes = 10;
+
             }else{
                 runAlgTimes = 4;
             }
             System.out.println("CURRENT FILE RUN:  " + fileName);
-            AntAlgorithm antColony = new AntAlgorithm(model, fileName +" -- ResultFile", runAlgTimes);
+            AntAlgorithm antColony = new AntAlgorithm(model, fileName +"_result_file", runAlgTimes);
             antColony.runACO();
             double best = Arrays.stream(antColony.bestScoresArray).average().getAsDouble();
             double worst = Arrays.stream(antColony.worstScoresArray).average().getAsDouble();
