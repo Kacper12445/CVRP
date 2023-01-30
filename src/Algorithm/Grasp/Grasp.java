@@ -1,8 +1,10 @@
 package Algorithm.Grasp;
 
+import CSV.SaverCSV;
 import Loader.CVRPModel;
 import lombok.Data;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,31 +21,47 @@ public class Grasp {
 
     private Integer[] bestSolution;
 
-    public Grasp(int nodesCount, int neighborsNumber, int searchSteps, CVRPModel model, double alpha) {
+    private int popSize;
+
+    public Grasp(int nodesCount, int popSize, int neighborsNumber, int searchSteps, CVRPModel model, double alpha) {
         this.costMatrix = model.getAdjacencyMatrix();
         this.localSearch = new LocalSearch(this.costMatrix, neighborsNumber, searchSteps, model);
         this.bestSolution = new Integer[nodesCount];
         this.model = model;
         this.alpha = alpha;
+        this.popSize = popSize;
     }
 
-    public void runAlgorithm(int maxIteration) {
+    public void runAlgorithm(int maxIteration, String filename) throws IOException {
+        SaverCSV saverCSV = new SaverCSV(filename);
+        boolean newBest;
         Integer[] currentSolution;
         Integer[] localFoundSolution;
+        double[] results = new double[popSize + 1];
         for (int i = 0; i < maxIteration; i++) {
-            currentSolution = ConstructGreedyRandomizedSolution();
-            localFoundSolution = this.localSearch.search(currentSolution);
-            if (model.evaluateScore(localFoundSolution) < model.evaluateScore(currentSolution)) {
-                currentSolution = copyArray(localFoundSolution);
-            }
-            if (this.bestSolution[0] == null) {
-                this.bestSolution = copyArray(currentSolution);
-            } else {
-                if (model.evaluateScore(currentSolution) < model.evaluateScore(this.bestSolution)) {
+            newBest = false;
+            for (int pop = 0; pop < popSize; pop++) {
+                currentSolution = ConstructGreedyRandomizedSolution();
+                localFoundSolution = this.localSearch.search(currentSolution);
+                if (model.evaluateScore(localFoundSolution) < model.evaluateScore(currentSolution)) {
+                    currentSolution = copyArray(localFoundSolution);
+                }
+                results[pop] = model.evaluateScore(currentSolution);
+                if (this.bestSolution[0] == null) {
                     this.bestSolution = copyArray(currentSolution);
+                } else {
+                    if (model.evaluateScore(currentSolution) < model.evaluateScore(this.bestSolution)) {
+                        this.bestSolution = copyArray(currentSolution);
+                        newBest = true;
+                    }
                 }
             }
+            if (newBest) {
+                results[popSize] = model.evaluateScore(this.bestSolution);
+            }
+            saverCSV.saveEpochToCSV(i, results);
         }
+        saverCSV.closeFile();
     }
 
     private Integer[] ConstructGreedyRandomizedSolution() {
