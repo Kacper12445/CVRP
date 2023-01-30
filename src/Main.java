@@ -1,50 +1,31 @@
-import Algorithm.ACO.AntAlgorithm;
 import Algorithm.Greedy.GreedyAlgorithm;
 import Algorithm.Random.RandomAlgorithm;
 import CSV.SaverCSV;
 import Loader.Loader;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import Loader.*;
 
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        String[] fileNames = { "Easy - P-n20-k2", "Easy - P-n50-k7", "Medium - tai100c"};
-
-        String[] fileNames = { "Difficult - X-n599-k92", "Difficult - X-n801-k40", "V_Difficult - Leuven1-3000N, 25Q"};
-        for(String fileName : fileNames){
-            Loader loader = new Loader();
-            CVRPModel model = loader.loadFileData(fileName);
-//            GreedyAlgorithm greedy = new GreedyAlgorithm(0, model);
-//            greedy.searchForSolution();
-            int runAlgTimes;
-            if(!fileName.equals("V_Difficult - Leuven1-3000N, 25Q")){
-                runAlgTimes = 10;
-
-            }else{
-                runAlgTimes = 4;
+        Loader loader = new Loader();
+        CVRPModel model = loader.loadFileData("Medium - tai100c");
+        GreedyAlgorithm greedy = new GreedyAlgorithm(0, model);
+        greedy.searchForSolution();
+        SaverCSV saverCSV = new SaverCSV("randomTest.csv");
+        double[] results = new double[10];
+        for (int j = 0; j < 10; j++) {
+            for (int i = 0; i < 10; i++) {
+                RandomAlgorithm random = new RandomAlgorithm(model);
+                random.searchSolution();
+                results[i] = random.getCost();
             }
-            System.out.println("CURRENT FILE RUN:  " + fileName);
-            AntAlgorithm antColony = new AntAlgorithm(model, fileName +"_result_file", runAlgTimes);
-            antColony.runACO();
-            double best = Arrays.stream(antColony.bestScoresArray).average().getAsDouble();
-            double worst = Arrays.stream(antColony.worstScoresArray).average().getAsDouble();
-            System.out.println(Arrays.toString(antColony.bestScoresArray));
-            System.out.println(Arrays.toString(antColony.worstScoresArray));
-            System.out.println("BEST AVG: " + best);
-            System.out.println("WORST AVG: " + worst);
-
-//        saverCSV.closeFile();
-//            System.out.println("GREEDY COST: " + greedy.getCost());
-
-//        submitLoader(model);
+            saverCSV.saveEpochToCSV(j, results);
         }
-
-
-
+        saverCSV.closeFile();
+//        submitLoader(model);
     }
 
     private static void submitLoader(CVRPModel model) {

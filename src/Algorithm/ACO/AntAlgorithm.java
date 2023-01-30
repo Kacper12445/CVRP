@@ -73,6 +73,7 @@ public class AntAlgorithm {
             updateBestPath();
             if(runAlgorithmNumber < 2){
                 saverCSV.saveEpochToCSV(i, antsScores);
+//                saverCSV.closeFile();
             }
             Arrays.fill(antsScores, 0.0);
         }
