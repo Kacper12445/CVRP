@@ -1,11 +1,9 @@
-import Algorithm.Grasp.Grasp;
 import Algorithm.Greedy.GreedyAlgorithm;
 import Algorithm.Random.RandomAlgorithm;
 import CSV.SaverCSV;
 import Loader.Loader;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import Loader.*;
 
@@ -13,20 +11,9 @@ import Loader.*;
 public class Main {
     public static void main(String[] args) throws IOException {
         Loader loader = new Loader();
-        CVRPModel model = loader.loadFileData("Difficult - X-n801-k40");
-
-        Grasp grasp = new Grasp(model.getDatasetSize(), 300, 30, model, 0.001);
-        grasp.runAlgorithm(300);
-        System.out.println("GRASP:");
-        System.out.println(Arrays.toString(grasp.getBestSolution()));
-        System.out.println(model.evaluateScore(grasp.getBestSolution()));
-
+        CVRPModel model = loader.loadFileData("Medium - tai100c");
         GreedyAlgorithm greedy = new GreedyAlgorithm(0, model);
         greedy.searchForSolution();
-        System.out.println("\nGreedy:");
-        System.out.println(Arrays.toString(greedy.getPath()));
-        System.out.println(model.evaluateScore(greedy.getPath()));
-
         SaverCSV saverCSV = new SaverCSV("randomTest.csv");
         double[] results = new double[10];
         for (int j = 0; j < 10; j++) {
