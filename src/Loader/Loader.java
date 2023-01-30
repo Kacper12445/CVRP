@@ -14,7 +14,7 @@ public class Loader {
     private final String dimension = "DIMENSION";
 
     public CVRPModel loadFileData(String fileName) throws IOException {
-        String filePath  = new File("./DataSets/"+ fileName).getCanonicalPath();
+        String filePath  = new File("./CVRP/DataSets/"+ fileName).getCanonicalPath();
         File fileToRead = new File(filePath + ".vrp");
         CVRPModel model = new CVRPModel();
 
